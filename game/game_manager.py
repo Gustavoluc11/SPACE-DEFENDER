@@ -4,7 +4,7 @@ import random
 
 import pygame
 
-from settings import (BOSS_EVERY, CYAN, FPS, GOLD, GREY, HEIGHT, RED, TITLE,
+from settings import (BOSS_EVERY, CREDITS, CYAN, FPS, GOLD, GREY, HEIGHT, RED, TITLE,
                       WHITE, WIDTH)
 from game import storage
 from game.assets import Assets
@@ -488,6 +488,7 @@ class GameManager:
             draw_text(canvas, f"Recorde: {self.best_score:07d}", self.font_small, GOLD, (WIDTH // 2, 520))
         draw_text(canvas, "WASD / Setas: mover    ESPAÇO: atirar    ESC: pausa    F11: tela cheia",
                   self.font_tiny, GREY, (WIDTH // 2, HEIGHT - 20))
+        draw_text(canvas, CREDITS, self.font_tiny, GREY, (WIDTH - 12, 12), "topright")
 
     def draw_settings(self, canvas):
         s = self.settings

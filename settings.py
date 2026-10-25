@@ -51,3 +51,5 @@ DEFAULT_SETTINGS = {
     "sfx_volume": 0.7,
     "show_fps": False,
 }
+
+CREDITS = "Criado por Gustavo Gomes"
