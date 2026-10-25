@@ -95,3 +95,8 @@ O executável fica em `dist/SpaceDefender.exe`. A pasta `data/` é criada ao lad
 - Mais tipos de inimigos e novos padrões de chefe
 - Controle por gamepad
 - Animação por spritesheet
+
+## Créditos
+
+- Criado por **SEU NOME** ([@Gustavoluc11](https://github.com/Gustavoluc11))
+- Arte (naves e fundo) gerada com IA e editada para o projeto
