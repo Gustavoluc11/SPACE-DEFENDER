@@ -52,4 +52,4 @@ DEFAULT_SETTINGS = {
     "show_fps": False,
 }
 
-CREDITS = "Criado por Gustavo Gomes"
+CREDITS = "Criado por: Gustavo Gomes"
