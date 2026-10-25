@@ -4,7 +4,7 @@ import random
 
 import pygame
 
-from settings import (BOSS_EVERY, CREDITS, CYAN, FPS, GOLD, GREY, HEIGHT, RED, TITLE,
+from settings import (BOSS_EVERY, CREDITS, CYAN, FPS, GOLD, GREY, HEIGHT, IMAGES_DIR, RED, TITLE,
                       WHITE, WIDTH)
 from game import storage
 from game.assets import Assets
@@ -23,6 +23,14 @@ class GameManager:
     def __init__(self):
         pygame.init()
         self.settings = storage.load_settings()
+
+        try:
+            icon = pygame.image.load(str(IMAGES_DIR / "player.png"))
+            icon = pygame.transform.smoothscale(icon, (32, 32))
+            pygame.display.set_icon(icon)
+        except (pygame.error, FileNotFoundError):
+            pass
+
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.SCALED)
         pygame.display.set_caption(TITLE)
         self.canvas = pygame.Surface((WIDTH, HEIGHT))
