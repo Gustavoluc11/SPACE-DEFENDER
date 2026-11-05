@@ -6,7 +6,8 @@ import sys
 from pathlib import Path
 
 TITLE = "Space Defender"
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 960, 540       # 16:9 (em tela cheia 1920x1080 vira exatamente 2x)
+START_FULLSCREEN = True        # abre direto em tela cheia (F11 alterna)
 FPS = 60
 
 # Caminhos (funcionam tanto no Python normal quanto no .exe do PyInstaller)

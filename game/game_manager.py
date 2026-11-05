@@ -4,8 +4,8 @@ import random
 
 import pygame
 
-from settings import (BOSS_EVERY, CREDITS, CYAN, FPS, GOLD, GREY, HEIGHT, IMAGES_DIR, RED, TITLE,
-                      WHITE, WIDTH)
+from settings import (BOSS_EVERY, CREDITS, CYAN, FPS, GOLD, GREY, HEIGHT, IMAGES_DIR,
+                      RED, START_FULLSCREEN, TITLE, WHITE, WIDTH)
 from game import storage
 from game.assets import Assets
 from game.audio import Audio
@@ -23,7 +23,6 @@ class GameManager:
     def __init__(self):
         pygame.init()
         self.settings = storage.load_settings()
-
         try:
             icon = pygame.image.load(str(IMAGES_DIR / "player.png"))
             icon = pygame.transform.smoothscale(icon, (32, 32))
@@ -31,7 +30,8 @@ class GameManager:
         except (pygame.error, FileNotFoundError):
             pass
 
-        self.screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.SCALED)
+        flags = pygame.SCALED | (pygame.FULLSCREEN if START_FULLSCREEN else 0)
+        self.screen = pygame.display.set_mode((WIDTH, HEIGHT), flags)
         pygame.display.set_caption(TITLE)
         self.canvas = pygame.Surface((WIDTH, HEIGHT))
         self.clock = pygame.time.Clock()
@@ -50,9 +50,9 @@ class GameManager:
         self.overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
         self.overlay.fill((0, 0, 20, 175))
 
-        self.menu_main = Menu(["Jogar", "Configurações", "Sair"], self.font_menu, top=350)
+        self.menu_main = Menu(["Jogar", "Configurações", "Sair"], self.font_menu, top=275, spacing=52)
         self.menu_pause = Menu(["Continuar", "Configurações", "Menu principal"], self.font_menu, top=280)
-        self.menu_over = Menu(["Jogar novamente", "Menu principal"], self.font_menu, top=485, spacing=52)
+        self.menu_over = Menu(["Jogar novamente", "Menu principal"], self.font_menu, top=400, spacing=50)
         self.menu_settings = Menu(["", "", "", "Voltar"], self.font_menu, top=250, spacing=62)
 
         self.state = MENU
@@ -486,14 +486,14 @@ class GameManager:
 
     def draw_main_menu(self, canvas):
         ticks = pygame.time.get_ticks() / 1000
-        draw_text(canvas, "SPACE DEFENDER", self.font_title, (40, 110, 255), (WIDTH // 2, 124), shadow=False)
-        draw_text(canvas, "SPACE DEFENDER", self.font_title, (225, 240, 255), (WIDTH // 2, 120))
-        draw_text(canvas, "Shoot 'em up 2D", self.font_small, GREY, (WIDTH // 2, 172))
+        draw_text(canvas, "SPACE DEFENDER", self.font_title, (40, 110, 255), (WIDTH // 2, 94), shadow=False)
+        draw_text(canvas, "SPACE DEFENDER", self.font_title, (225, 240, 255), (WIDTH // 2, 90))
+        draw_text(canvas, "Shoot 'em up 2D", self.font_small, GREY, (WIDTH // 2, 138))
         ship = self.assets.images["player"]
-        canvas.blit(ship, ship.get_rect(center=(WIDTH // 2, 255 + int(math.sin(ticks * 2) * 6))))
+        canvas.blit(ship, ship.get_rect(center=(WIDTH // 2, 205 + int(math.sin(ticks * 2) * 6))))
         self.menu_main.draw(canvas)
         if self.best_score:
-            draw_text(canvas, f"Recorde: {self.best_score:07d}", self.font_small, GOLD, (WIDTH // 2, 520))
+            draw_text(canvas, f"Recorde: {self.best_score:07d}", self.font_small, GOLD, (WIDTH // 2, 450))
         draw_text(canvas, "WASD / Setas: mover    ESPAÇO: atirar    ESC: pausa    F11: tela cheia",
                   self.font_tiny, GREY, (WIDTH // 2, HEIGHT - 20))
         draw_text(canvas, CREDITS, self.font_tiny, GREY, (WIDTH - 12, 12), "topright")
@@ -512,14 +512,14 @@ class GameManager:
                   (WIDTH // 2, HEIGHT - 40))
 
     def draw_game_over(self, canvas):
-        draw_text(canvas, "FIM DE JOGO", self.font_title, RED, (WIDTH // 2, 90))
-        draw_text(canvas, f"Pontos: {self.score:07d}", self.font_menu, WHITE, (WIDTH // 2, 160))
-        draw_text(canvas, f"Onda alcançada: {self.wave}", self.font_small, CYAN, (WIDTH // 2, 195))
+        draw_text(canvas, "FIM DE JOGO", self.font_title, RED, (WIDTH // 2, 60))
+        draw_text(canvas, f"Pontos: {self.score:07d}", self.font_menu, WHITE, (WIDTH // 2, 118))
+        draw_text(canvas, f"Onda alcançada: {self.wave}", self.font_small, CYAN, (WIDTH // 2, 150))
         if self.new_record and int(pygame.time.get_ticks() / 400) % 2 == 0:
-            draw_text(canvas, "NOVO RECORDE!", self.font_menu, GOLD, (WIDTH // 2, 232))
-        draw_text(canvas, "MELHORES PONTUAÇÕES", self.font_small, GREY, (WIDTH // 2, 278))
+            draw_text(canvas, "NOVO RECORDE!", self.font_menu, GOLD, (WIDTH // 2, 182))
+        draw_text(canvas, "MELHORES PONTUAÇÕES", self.font_small, GREY, (WIDTH // 2, 222))
         for i, entry in enumerate(self.highscores):
             line = f"{i + 1}.  {entry['score']:07d}    onda {entry['wave']}"
             draw_text(canvas, line, self.font_small, GOLD if i == 0 else WHITE,
-                      (WIDTH // 2, 310 + i * 26))
+                      (WIDTH // 2, 250 + i * 24))
         self.menu_over.draw(canvas)
