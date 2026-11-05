@@ -32,7 +32,9 @@ GREY = (150, 160, 185)
 
 # Jogador
 PLAYER_SPEED = 360          # pixels por segundo
-PLAYER_LIVES = 3
+PLAYER_MAX_HEALTH = 120      # vida máxima do jogador
+ENEMY_BULLET_DAMAGE = 20     # dano de cada tiro inimigo
+COLLISION_DAMAGE = 20        # dano ao bater num inimigo
 PLAYER_SHOOT_DELAY = 0.22   # segundos entre tiros
 PLAYER_BULLET_SPEED = 640
 INVULNERABLE_TIME = 1.6     # segundos de invencibilidade após tomar dano

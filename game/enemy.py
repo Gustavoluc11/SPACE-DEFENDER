@@ -4,7 +4,7 @@ import random
 
 import pygame
 
-from settings import HEIGHT, WIDTH
+from settings import ENEMY_BULLET_DAMAGE, HEIGHT, WIDTH
 from game.bullet import Bullet
 from game.utils import clamp, flash_version
 
@@ -16,7 +16,7 @@ def _aim(origin, target):
 
 
 def _shot(pos, angle, speed, image):
-    return Bullet(pos, pygame.Vector2(speed, 0).rotate(angle), image, 1, False)
+    return Bullet(pos, pygame.Vector2(speed, 0).rotate(angle), image, ENEMY_BULLET_DAMAGE, False)
 
 
 class Enemy(pygame.sprite.Sprite):

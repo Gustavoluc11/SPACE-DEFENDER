@@ -5,7 +5,7 @@ import random
 import pygame
 
 from settings import (HEIGHT, INVULNERABLE_TIME, PLAYER_BULLET_SPEED,
-                      PLAYER_LIVES, PLAYER_SHOOT_DELAY, PLAYER_SPEED,
+                      PLAYER_MAX_HEALTH, PLAYER_SHOOT_DELAY, PLAYER_SPEED,
                       SHIELD_TIME, SHOT_BOOST_TIME, WIDTH)
 from game.bullet import Bullet
 
@@ -28,7 +28,7 @@ class Player(pygame.sprite.Sprite):
         self.hitbox = pygame.Rect(0, 0, int(self.rect.w * 0.45),
                                   int(self.rect.h * 0.55))
         self.hitbox.center = self.rect.center
-        self.lives = PLAYER_LIVES
+        self.health = PLAYER_MAX_HEALTH
         self.cooldown = 0.0
         self.invulnerable = 0.0
         self.shield_time = 0.0
@@ -75,14 +75,14 @@ class Player(pygame.sprite.Sprite):
                                   velocity, self._rotated[angle], 1, True))
         return bullets
 
-    def take_hit(self):
+    def take_hit(self, damage):
         """Tenta aplicar dano. Retorna True se perdeu vida."""
         if self.dead or self.invulnerable > 0 or self.shield_time > 0:
             return False
-        self.lives -= 1
+        self.health -= damage
         self.shot_level, self.shot_time = 1, 0.0
-        if self.lives <= 0:
-            self.lives = 0
+        if self.health <= 0:
+            self.health = 0
             self.dead = True
         else:
             self.invulnerable = INVULNERABLE_TIME

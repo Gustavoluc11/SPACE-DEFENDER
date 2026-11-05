@@ -4,8 +4,8 @@ import random
 
 import pygame
 
-from settings import (BOSS_EVERY, CREDITS, CYAN, FPS, GOLD, GREY, HEIGHT, IMAGES_DIR,
-                      RED, START_FULLSCREEN, TITLE, WHITE, WIDTH)
+from settings import (BOSS_EVERY, COLLISION_DAMAGE, CREDITS, CYAN, FPS, GOLD, GREY, HEIGHT,
+                      IMAGES_DIR, PLAYER_MAX_HEALTH, RED, START_FULLSCREEN, TITLE, WHITE, WIDTH)
 from game import storage
 from game.assets import Assets
 from game.audio import Audio
@@ -46,7 +46,6 @@ class GameManager:
         self.font_menu = pygame.font.Font(None, 40)
         self.font_small = pygame.font.Font(None, 28)
         self.font_tiny = pygame.font.Font(None, 22)
-        self.life_icon = pygame.transform.smoothscale(self.assets.images["player"], (26, 26))
         self.overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
         self.overlay.fill((0, 0, 20, 175))
 
@@ -347,14 +346,14 @@ class GameManager:
             return
 
         # tiros inimigos x jogador
-        for _ in pygame.sprite.spritecollide(player, self.enemy_bullets, True, hits):
-            self.damage_player()
+        for bullet in pygame.sprite.spritecollide(player, self.enemy_bullets, True, hits):   # <-- MUDOU
+            self.damage_player(bullet.damage)                                                # <-- MUDOU
 
         # corpo a corpo
         for enemy in pygame.sprite.spritecollide(player, self.enemies, False, hits):
             if not isinstance(enemy, Boss):
                 self.kill_enemy(enemy)
-            self.damage_player()
+            self.damage_player(COLLISION_DAMAGE)                                             # <-- MUDOU
 
         # power-ups
         for powerup in pygame.sprite.spritecollide(player, self.powerups, True, hits):
@@ -383,9 +382,9 @@ class GameManager:
     def spawn_powerup(self, kind, pos):
         self.powerups.add(PowerUp(kind, self.assets.images[f"powerup_{kind}"], (pos[0], pos[1])))
 
-    def damage_player(self):
+    def damage_player(self, damage):
         player = self.player
-        if player.take_hit():
+        if player.take_hit(damage):
             self.audio.play("player_hit")
             self.particles.explosion(player.pos, (90, 200, 255), 22, 220, 3)
             self.shake = 12
@@ -462,8 +461,13 @@ class GameManager:
         draw_text(canvas, f"RECORDE {max(self.best_score, self.score):07d}", self.font_tiny,
                   GOLD, (16, 36), "topleft")
         draw_text(canvas, f"ONDA {self.wave}", self.font_small, CYAN, (WIDTH // 2, 12), "midtop")
-        for i in range(player.lives):
-            canvas.blit(self.life_icon, (WIDTH - 16 - (i + 1) * 30, 10))
+        # barra de vida (canto superior direito)
+        bar = pygame.Rect(WIDTH - 16 - 200, 14, 200, 18)
+        ratio = player.health / PLAYER_MAX_HEALTH
+        color = (80, 220, 120) if ratio > 0.5 else (255, 200, 60) if ratio > 0.25 else (255, 70, 70)
+        draw_bar(canvas, bar, ratio, color)
+        draw_text(canvas, f"{player.health} / {PLAYER_MAX_HEALTH}", self.font_tiny, WHITE, bar.center)
+        draw_text(canvas, "VIDA", self.font_tiny, GREY, (bar.left - 8, bar.centery), "midright")
 
         y = 70
         if player.shield_time > 0:
