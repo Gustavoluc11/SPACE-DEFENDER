@@ -160,17 +160,26 @@ class Assets:
 
     @staticmethod
     def _load_background():
-        path = IMAGES_DIR / "background.png"
-        if path.exists():
+        for nome in ("background.png", "background.jpg", "background.jpeg"):
+            path = IMAGES_DIR / nome
+            if not path.exists():
+                continue
             try:
                 image = pygame.image.load(str(path)).convert()
                 height = max(1, round(image.get_height() * WIDTH / image.get_width()))
                 image = pygame.transform.smoothscale(image, (WIDTH, height))
-                # a imagem é espelhada na vertical para a rolagem não ter emenda visível
-                tile = pygame.Surface((WIDTH, height * 2))
-                tile.blit(image, (0, 0))
-                tile.blit(pygame.transform.flip(image, False, True), (0, height))
+
+                # Para a rolagem recomeçar sem corte, misturamos o FIM da imagem com o COMEÇO.
+                blend = min(64, height // 4)               # altura da faixa de mistura (pixels)
+                tile_h = height - blend                    # altura final do "ladrilho"
+                tile = pygame.Surface((WIDTH, tile_h)).convert()
+                tile.blit(image, (0, 0), (0, 0, WIDTH, tile_h))        # copia a imagem sem o final
+                tail = image.subsurface((0, tile_h, WIDTH, blend)).copy()  # as últimas linhas
+                for y in range(blend):                     # linha por linha, do topo da faixa
+                    row = tail.subsurface((0, y, WIDTH, 1)).copy()
+                    row.set_alpha(int(255 * (1 - y / blend)))   # começa visível e some aos poucos
+                    tile.blit(row, (0, y))
                 return tile
             except pygame.error as erro:
-                print(f"Não consegui abrir background.png: {erro}")
+                print(f"Não consegui abrir {nome}: {erro}")
         return None
